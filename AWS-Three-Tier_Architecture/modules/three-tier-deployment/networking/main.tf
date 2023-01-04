@@ -1,8 +1,5 @@
 # --- networking/main.tf ---
-
-
 ### CUSTOM VPC CONFIGURATION
-
 resource "random_integer" "random" {
   min = 1
   max = 100
@@ -25,7 +22,6 @@ data "aws_availability_zones" "available" {
 }
 
 ### INTERNET GATEWAY
-
 resource "aws_internet_gateway" "three_tier_internet_gateway" {
   vpc_id = aws_vpc.three_tier_vpc.id
 
@@ -39,7 +35,6 @@ resource "aws_internet_gateway" "three_tier_internet_gateway" {
 
 
 ### PUBLIC SUBNETS (WEB TIER) AND ASSOCIATED ROUTE TABLES
-
 resource "aws_subnet" "three_tier_public_subnets" {
   count                   = var.public_sn_count
   vpc_id                  = aws_vpc.three_tier_vpc.id
@@ -74,7 +69,6 @@ resource "aws_route_table_association" "three_tier_public_assoc" {
 
 
 ### EIP AND NAT GATEWAY
-
 resource "aws_eip" "three_tier_nat_eip" {
   vpc = true
 }
@@ -86,7 +80,6 @@ resource "aws_nat_gateway" "three_tier_ngw" {
 
 
 ### PRIVATE SUBNETS (APP TIER & DATABASE TIER) AND ASSOCIATED ROUTE TABLES
-
 resource "aws_subnet" "three_tier_private_subnets" {
   count                   = var.private_sn_count
   vpc_id                  = aws_vpc.three_tier_vpc.id
@@ -113,13 +106,11 @@ resource "aws_route" "default_private_route" {
   nat_gateway_id = aws_nat_gateway.three_tier_ngw.id
 }
 
-
 resource "aws_route_table_association" "three_tier_private_assoc" {
   count          = var.private_sn_count
   route_table_id = aws_route_table.three_tier_private_rt.id
   subnet_id      = aws_subnet.three_tier_private_subnets.*.id[count.index]
 }
-
 
 resource "aws_subnet" "three_tier_private_subnets_db" {
   count                   = var.private_sn_count
@@ -133,9 +124,7 @@ resource "aws_subnet" "three_tier_private_subnets_db" {
   }
 }
 
-
 ### SECURITY GROUPS
-
 resource "aws_security_group" "three_tier_bastion_sg" {
   name        = "three_tier_bastion_sg"
   description = "Allow SSH Inbound Traffic From Set IP"
@@ -155,7 +144,6 @@ resource "aws_security_group" "three_tier_bastion_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
 
 resource "aws_security_group" "three_tier_lb_sg" {
   name        = "three_tier_lb_sg"
